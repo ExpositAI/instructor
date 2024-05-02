@@ -1,4 +1,5 @@
 import json
+import json_repair
 import logging
 from functools import wraps
 from typing import Annotated, Any, Optional, TypeVar, cast
@@ -155,7 +156,8 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            parsed = json.loads(extra_text, strict=False)
+            logger.warning("Using json_repair to allow control characters")
+            parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
 
