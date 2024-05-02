@@ -156,7 +156,7 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            logger.warning("Using json_repair to allow control characters")
+            logger.debug("Using json_repair")
             parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
