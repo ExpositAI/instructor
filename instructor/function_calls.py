@@ -1,5 +1,6 @@
 # type: ignore
 import json
+import json_repair
 import logging
 from functools import wraps
 from typing import Annotated, Any, Optional, TypeVar, cast, get_origin, Literal
@@ -310,7 +311,8 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            parsed = json.loads(extra_text, strict=False)
+            logger.debug("Using json_repair")
+            parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
 
@@ -339,7 +341,8 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            parsed = json.loads(extra_text, strict=False)
+            logger.debug("Using json_repair")
+            parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
 
@@ -364,7 +367,8 @@ class OpenAISchema(BaseModel):
         validation_context: Optional[dict[str, Any]] = None,
         strict: Optional[bool] = None,
     ) -> BaseModel:
-        model = json.loads(completion.text)
+        logger.debug("Using json_repair")
+        parsed = json_repair.loads(completion.text)
         return cls.model_validate(model, context=validation_context, strict=strict)
 
     @classmethod
