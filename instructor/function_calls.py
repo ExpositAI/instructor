@@ -368,7 +368,7 @@ class OpenAISchema(BaseModel):
         strict: Optional[bool] = None,
     ) -> BaseModel:
         logger.debug("Using json_repair")
-        parsed = json_repair.loads(completion.text)
+        model = json_repair.loads(completion.text)
         return cls.model_validate(model, context=validation_context, strict=strict)
 
     @classmethod
