@@ -13,6 +13,7 @@ from pydantic import (
     TypeAdapter,
     create_model,
 )
+import json_repair
 
 from instructor.exceptions import IncompleteOutputException
 from instructor.mode import Mode
@@ -170,7 +171,8 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            parsed = json.loads(extra_text, strict=False)
+            logger.debug("Using json_repair")
+            parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
 
@@ -199,7 +201,8 @@ class OpenAISchema(BaseModel):
             )
         else:
             # Allow control characters.
-            parsed = json.loads(extra_text, strict=False)
+            logger.debug("Using json_repair")
+            parsed = json_repair.loads(extra_text)
             # Pydantic non-strict: https://docs.pydantic.dev/latest/concepts/strict_mode/
             return cls.model_validate(parsed, context=validation_context, strict=False)
 
@@ -224,7 +227,8 @@ class OpenAISchema(BaseModel):
         validation_context: Optional[dict[str, Any]] = None,
         strict: Optional[bool] = None,
     ) -> BaseModel:
-        model = json.loads(completion.text)
+        logger.debug("Using json_repair")
+        model = json_repair.loads(completion.text)
         return cls.model_validate(model, context=validation_context, strict=strict)
 
     @classmethod
