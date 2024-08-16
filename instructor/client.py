@@ -400,9 +400,16 @@ def from_openai(
         }
 
     if isinstance(client, openai.OpenAI):
+        # Patch the openai create function to print out the request and response.
+        def patched_create(self, *args, **kwargs):
+            print("Request:", kwargs)
+            response = client.chat.completions.create(*args, **kwargs)
+            print("Response:", response)
+            return response
+
         return Instructor(
             client=client,
-            create=instructor.patch(create=client.chat.completions.create, mode=mode),
+            create=instructor.patch(create=patched_create, mode=mode),
             mode=mode,
             provider=provider,
             **kwargs,
